@@ -1,3 +1,8 @@
+[![Build Status](https://travis-ci.org/gmsec/oauth2.svg?branch=master)](https://travis-ci.org/gmsec/oauth2)
+[![Go Report Card](https://goreportcard.com/badge/github.com/gmsec/oauth2)](https://goreportcard.com/report/github.com/gmsec/oauth2)
+[![codecov](https://codecov.io/gh/gmsec/gmsec/branch/master/graph/badge.svg)](https://codecov.io/gh/gmsec/gmsec)
+[![GoDoc](https://godoc.org/github.com/gmsec/gmsec?status.svg)](https://godoc.org/github.com/gmsec/gmsec)
+
 # 服务授权系统
 
 - 基于[gmsec](https://github.com/gmsec/gmsec)构建
@@ -16,7 +21,6 @@ make gen
 
 ## 总览:
 - [Oauth]
-- [Waiting to write...]
 
 --------------------
 
