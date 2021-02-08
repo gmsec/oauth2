@@ -1,0 +1,19 @@
+base:
+    is_dev : true
+    serial_number : 1.0.0
+    service_name : oauth2
+    service_displayname : oauth2server
+    sercice_desc : oauth2微服务
+mysql_info:
+    host : 192.155.1.150 # type=1的时候，host为yml文件全路径
+    port : 3306
+    database : oauth_db
+    username : devserver
+    password : dev.hello123
+    type: 0 # 数据库类型:0:mysql , 1:sqlite , 2:mssql
+redis_info:
+    addrs: ["192.155.1.150:6379"]
+    password: Niren1015
+    group_name: oauth2
+    db: 0
+port : 82

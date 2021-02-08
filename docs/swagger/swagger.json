@@ -1,0 +1,275 @@
+{
+     "swagger": "2.0",
+     "info": {
+          "description": "swagger default desc",
+          "version": "1.0.0",
+          "title": "Swagger Petstore"
+     },
+     "host": "localhost:8080",
+     "basePath": "/oauth2",
+     "tags": [
+          {
+               "name": "Oauth",
+               "description": ""
+          }
+     ],
+     "schemes": [
+          "http"
+     ],
+     "paths": {
+          "/oauth2/api/v1/oauth.authorize": {
+               "post": {
+                    "tags": [
+                         "Oauth"
+                    ],
+                    "summary": "应用授权",
+                    "description": "应用授权",
+                    "consumes": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "produces": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "parameters": [
+                         {
+                              "in": "body",
+                              "name": "body",
+                              "description": "应用授权",
+                              "required": true,
+                              "schema": {
+                                   "$ref": "#/definitions/RefreshTokenReq"
+                              }
+                         }
+                    ],
+                    "responses": {
+                         "400": {
+                              "description": "v"
+                         },
+                         "404": {
+                              "description": "not found"
+                         },
+                         "405": {
+                              "description": "Validation exception"
+                         }
+                    }
+               }
+          },
+          "/oauth2/api/v1/oauth.check_token": {
+               "post": {
+                    "tags": [
+                         "Oauth"
+                    ],
+                    "summary": "校验token，并获取详细信息",
+                    "description": "校验token，并获取详细信息",
+                    "consumes": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "produces": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "parameters": [
+                         {
+                              "in": "body",
+                              "name": "body",
+                              "description": "校验token，并获取详细信息",
+                              "required": true,
+                              "schema": {
+                                   "$ref": "#/definitions/RefreshTokenReq"
+                              }
+                         }
+                    ],
+                    "responses": {
+                         "400": {
+                              "description": "v"
+                         },
+                         "404": {
+                              "description": "not found"
+                         },
+                         "405": {
+                              "description": "Validation exception"
+                         }
+                    }
+               }
+          },
+          "/oauth2/api/v1/oauth.login": {
+               "post": {
+                    "tags": [
+                         "Oauth"
+                    ],
+                    "summary": "登录",
+                    "description": "登录",
+                    "consumes": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "produces": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "parameters": [
+                         {
+                              "in": "body",
+                              "name": "body",
+                              "description": "登录",
+                              "required": true,
+                              "schema": {
+                                   "$ref": "#/definitions/RefreshTokenReq"
+                              }
+                         }
+                    ],
+                    "responses": {
+                         "400": {
+                              "description": "v"
+                         },
+                         "404": {
+                              "description": "not found"
+                         },
+                         "405": {
+                              "description": "Validation exception"
+                         }
+                    }
+               }
+          },
+          "/oauth2/api/v1/oauth.refresh_token": {
+               "post": {
+                    "tags": [
+                         "Oauth"
+                    ],
+                    "summary": "刷新token",
+                    "description": "刷新token",
+                    "consumes": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "produces": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "parameters": [
+                         {
+                              "in": "body",
+                              "name": "body",
+                              "description": "刷新token",
+                              "required": true,
+                              "schema": {
+                                   "$ref": "#/definitions/RefreshTokenReq"
+                              }
+                         }
+                    ],
+                    "responses": {
+                         "400": {
+                              "description": "v"
+                         },
+                         "404": {
+                              "description": "not found"
+                         },
+                         "405": {
+                              "description": "Validation exception"
+                         }
+                    }
+               }
+          }
+     },
+     "securityDefinitions": {},
+     "definitions": {
+          "AuthorizeReq": {
+               "type": "object",
+               "properties": {
+                    "appId": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "应用的唯一标识"
+                    },
+                    "appKey": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "公匙"
+                    },
+                    "timestamp": {
+                         "type": "integer",
+                         "format": "int64",
+                         "description": "当前时间戳(秒,差异系统时间10秒)"
+                    },
+                    "token": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "验证token md5(appid + appKey + timestamp + appSecret)"
+                    },
+                    "tokenType": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "令牌类型"
+                    }
+               },
+               "xml": {
+                    "name": "",
+                    "wrapped": false
+               }
+          },
+          "CheckTokenReq": {
+               "type": "object",
+               "properties": {
+                    "token": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "token"
+                    }
+               },
+               "xml": {
+                    "name": "",
+                    "wrapped": false
+               }
+          },
+          "LoginReq": {
+               "type": "object",
+               "properties": {
+                    "password": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "用户密码(md5加密)"
+                    },
+                    "timestamp": {
+                         "type": "integer",
+                         "format": "int64",
+                         "description": "当前时间戳(秒,差异系统时间10秒)"
+                    },
+                    "token": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "验证token md5(username + password + timestamp)"
+                    },
+                    "username": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "用户名"
+                    }
+               },
+               "xml": {
+                    "name": "",
+                    "wrapped": false
+               }
+          },
+          "RefreshTokenReq": {
+               "type": "object",
+               "properties": {
+                    "token": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "刷新令牌"
+                    }
+               },
+               "xml": {
+                    "name": "",
+                    "wrapped": false
+               }
+          }
+     },
+     "externalDocs": {
+          "description": "Find out more about Swagger",
+          "url": "https://github.com/xxjwxc/public"
+     }
+}
