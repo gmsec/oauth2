@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/gmsec/oauth2.svg?branch=master)](https://travis-ci.org/gmsec/oauth2)
 [![Go Report Card](https://goreportcard.com/badge/github.com/gmsec/oauth2)](https://goreportcard.com/report/github.com/gmsec/oauth2)
-[![codecov](https://codecov.io/gh/gmsec/gmsec/branch/master/graph/badge.svg)](https://codecov.io/gh/gmsec/gmsec)
-[![GoDoc](https://godoc.org/github.com/gmsec/gmsec?status.svg)](https://godoc.org/github.com/gmsec/gmsec)
+[![codecov](https://codecov.io/gh/gmsec/oauth2/branch/master/graph/badge.svg)](https://codecov.io/gh/gmsec/oauth2)
+[![GoDoc](https://godoc.org/github.com/gmsec/oauth2?status.svg)](https://godoc.org/github.com/gmsec/oauth2)
 
 # 服务授权系统
 
