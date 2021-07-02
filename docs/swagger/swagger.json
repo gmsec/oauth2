@@ -39,7 +39,7 @@
                               "description": "应用授权",
                               "required": true,
                               "schema": {
-                                   "$ref": "#/definitions/RefreshTokenReq"
+                                   "$ref": "#/definitions/UpdateUserReq"
                               }
                          }
                     ],
@@ -78,7 +78,241 @@
                               "description": "校验token，并获取详细信息",
                               "required": true,
                               "schema": {
-                                   "$ref": "#/definitions/RefreshTokenReq"
+                                   "$ref": "#/definitions/UpdateUserReq"
+                              }
+                         }
+                    ],
+                    "responses": {
+                         "400": {
+                              "description": "v"
+                         },
+                         "404": {
+                              "description": "not found"
+                         },
+                         "405": {
+                              "description": "Validation exception"
+                         }
+                    }
+               }
+          },
+          "/oauth2/api/v1/oauth.create_oauth": {
+               "post": {
+                    "tags": [
+                         "Oauth"
+                    ],
+                    "summary": "创建oauth",
+                    "description": "创建oauth",
+                    "consumes": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "produces": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "parameters": [
+                         {
+                              "in": "body",
+                              "name": "body",
+                              "description": "创建oauth",
+                              "required": true,
+                              "schema": {
+                                   "$ref": "#/definitions/UpdateUserReq"
+                              }
+                         }
+                    ],
+                    "responses": {
+                         "400": {
+                              "description": "v"
+                         },
+                         "404": {
+                              "description": "not found"
+                         },
+                         "405": {
+                              "description": "Validation exception"
+                         }
+                    }
+               }
+          },
+          "/oauth2/api/v1/oauth.create_user": {
+               "post": {
+                    "tags": [
+                         "Oauth"
+                    ],
+                    "summary": "创建用户",
+                    "description": "创建用户",
+                    "consumes": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "produces": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "parameters": [
+                         {
+                              "in": "body",
+                              "name": "body",
+                              "description": "创建用户",
+                              "required": true,
+                              "schema": {
+                                   "$ref": "#/definitions/UpdateUserReq"
+                              }
+                         }
+                    ],
+                    "responses": {
+                         "400": {
+                              "description": "v"
+                         },
+                         "404": {
+                              "description": "not found"
+                         },
+                         "405": {
+                              "description": "Validation exception"
+                         }
+                    }
+               }
+          },
+          "/oauth2/api/v1/oauth.delete_app": {
+               "post": {
+                    "tags": [
+                         "Oauth"
+                    ],
+                    "summary": "List 删除应用",
+                    "description": "List 删除应用",
+                    "consumes": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "produces": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "parameters": [
+                         {
+                              "in": "body",
+                              "name": "body",
+                              "description": "List 删除应用",
+                              "required": true,
+                              "schema": {
+                                   "$ref": "#/definitions/UpdateUserReq"
+                              }
+                         }
+                    ],
+                    "responses": {
+                         "400": {
+                              "description": "v"
+                         },
+                         "404": {
+                              "description": "not found"
+                         },
+                         "405": {
+                              "description": "Validation exception"
+                         }
+                    }
+               }
+          },
+          "/oauth2/api/v1/oauth.get_app_list": {
+               "post": {
+                    "tags": [
+                         "Oauth"
+                    ],
+                    "summary": "获取应用信息",
+                    "description": "获取应用信息",
+                    "consumes": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "produces": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "parameters": [
+                         {
+                              "in": "body",
+                              "name": "body",
+                              "description": "获取应用信息",
+                              "required": true,
+                              "schema": {
+                                   "$ref": "#/definitions/UpdateUserReq"
+                              }
+                         }
+                    ],
+                    "responses": {
+                         "400": {
+                              "description": "v"
+                         },
+                         "404": {
+                              "description": "not found"
+                         },
+                         "405": {
+                              "description": "Validation exception"
+                         }
+                    }
+               }
+          },
+          "/oauth2/api/v1/oauth.get_login_info": {
+               "post": {
+                    "tags": [
+                         "Oauth"
+                    ],
+                    "summary": "",
+                    "description": "",
+                    "consumes": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "produces": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "parameters": [
+                         {
+                              "in": "body",
+                              "name": "body",
+                              "description": "",
+                              "required": true,
+                              "schema": {
+                                   "$ref": "#/definitions/UpdateUserReq"
+                              }
+                         }
+                    ],
+                    "responses": {
+                         "400": {
+                              "description": "v"
+                         },
+                         "404": {
+                              "description": "not found"
+                         },
+                         "405": {
+                              "description": "Validation exception"
+                         }
+                    }
+               }
+          },
+          "/oauth2/api/v1/oauth.get_users": {
+               "post": {
+                    "tags": [
+                         "Oauth"
+                    ],
+                    "summary": "获取用户列表",
+                    "description": "获取用户列表",
+                    "consumes": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "produces": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "parameters": [
+                         {
+                              "in": "body",
+                              "name": "body",
+                              "description": "获取用户列表",
+                              "required": true,
+                              "schema": {
+                                   "$ref": "#/definitions/UpdateUserReq"
                               }
                          }
                     ],
@@ -117,7 +351,7 @@
                               "description": "登录",
                               "required": true,
                               "schema": {
-                                   "$ref": "#/definitions/RefreshTokenReq"
+                                   "$ref": "#/definitions/UpdateUserReq"
                               }
                          }
                     ],
@@ -156,7 +390,46 @@
                               "description": "刷新token",
                               "required": true,
                               "schema": {
-                                   "$ref": "#/definitions/RefreshTokenReq"
+                                   "$ref": "#/definitions/UpdateUserReq"
+                              }
+                         }
+                    ],
+                    "responses": {
+                         "400": {
+                              "description": "v"
+                         },
+                         "404": {
+                              "description": "not found"
+                         },
+                         "405": {
+                              "description": "Validation exception"
+                         }
+                    }
+               }
+          },
+          "/oauth2/api/v1/oauth.update_user": {
+               "post": {
+                    "tags": [
+                         "Oauth"
+                    ],
+                    "summary": "更新/删除用户",
+                    "description": "更新/删除用户",
+                    "consumes": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "produces": [
+                         "application/json",
+                         "application/xml"
+                    ],
+                    "parameters": [
+                         {
+                              "in": "body",
+                              "name": "body",
+                              "description": "更新/删除用户",
+                              "required": true,
+                              "schema": {
+                                   "$ref": "#/definitions/UpdateUserReq"
                               }
                          }
                     ],
@@ -203,6 +476,11 @@
                          "type": "string",
                          "format": "string",
                          "description": "令牌类型"
+                    },
+                    "userName": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "用户名(没有可以不用填写)"
                     }
                },
                "xml": {
@@ -217,6 +495,140 @@
                          "type": "string",
                          "format": "string",
                          "description": "token"
+                    }
+               },
+               "xml": {
+                    "name": "",
+                    "wrapped": false
+               }
+          },
+          "CreateOauthReq": {
+               "type": "object",
+               "properties": {
+                    "oauthInfo": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "应用信息(一般base64 json串)"
+                    },
+                    "username": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "用户名"
+                    }
+               },
+               "xml": {
+                    "name": "",
+                    "wrapped": false
+               }
+          },
+          "CreateUserReq": {
+               "type": "object",
+               "properties": {
+                    "password": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "用户密码(md5码)"
+                    },
+                    "regIP": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "注册时间"
+                    },
+                    "rootName": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "创建者"
+                    },
+                    "userInfo": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "应用信息(一般base64 json串)"
+                    },
+                    "userName": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "用户名"
+                    }
+               },
+               "xml": {
+                    "name": "",
+                    "wrapped": false
+               }
+          },
+          "DeleteAppReq": {
+               "type": "object",
+               "properties": {
+                    "appId": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "appid"
+                    },
+                    "username": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "用户名"
+                    }
+               },
+               "xml": {
+                    "name": "",
+                    "wrapped": false
+               }
+          },
+          "GetAppListReq": {
+               "type": "object",
+               "properties": {
+                    "appIds": {
+                         "type": "object",
+                         "format": "array",
+                         "description": "应用id(如果有，用户名无效)"
+                    },
+                    "pageNo": {
+                         "type": "integer",
+                         "format": "int32",
+                         "description": "页数"
+                    },
+                    "pageSize": {
+                         "type": "integer",
+                         "format": "int32",
+                         "description": "每页条数"
+                    },
+                    "username": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "用户名"
+                    }
+               },
+               "xml": {
+                    "name": "",
+                    "wrapped": false
+               }
+          },
+          "GetLoginInfoReq": {
+               "type": "object",
+               "properties": {
+                    "accessToken": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "用户token (跟用户名二选一)"
+                    }
+               },
+               "xml": {
+                    "name": "",
+                    "wrapped": false
+               }
+          },
+          "GetUsersReq": {
+               "type": "object",
+               "properties": {
+                    "rootName": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "创建者"
+                    },
+                    "userName": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "用户名(为空获取所有用户列表)"
                     }
                },
                "xml": {
@@ -260,6 +672,40 @@
                          "type": "string",
                          "format": "string",
                          "description": "刷新令牌"
+                    }
+               },
+               "xml": {
+                    "name": "",
+                    "wrapped": false
+               }
+          },
+          "UpdateUserReq": {
+               "type": "object",
+               "properties": {
+                    "op": {
+                         "type": "integer",
+                         "format": "int32",
+                         "description": "操作(1:添加，-1:删除)"
+                    },
+                    "password": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "用户密码(md5码)(如果有修改,不为空)"
+                    },
+                    "rootName": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "创建者"
+                    },
+                    "userInfo": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "应用信息(一般base64 json串)"
+                    },
+                    "userName": {
+                         "type": "string",
+                         "format": "string",
+                         "description": "用户名(要操作的用户名)"
                     }
                },
                "xml": {

@@ -20,7 +20,7 @@ func verifyToken(token, single string) bool {
 
 // GetOne 获取一个key可能有缓存
 func getOneOauth2Tbl(appID, appKey string) (*model.Oauth2Tbl, error) {
-	out := GetCacheOauth2TblByKey(appKey) // 缓存中获取
+	out := GetCacheOauth2TblByKey(appID) // 缓存中获取
 	if out != nil {
 		return out, nil
 	}
@@ -38,16 +38,16 @@ func getOneOauth2Tbl(appID, appKey string) (*model.Oauth2Tbl, error) {
 	oauthinfo, err := mgr.GetByOption(options...)
 	if err != nil {
 		if orm.IsNotFound(err) {
-			return nil, fmt.Errorf(message.NotFindError.String())
+			return nil, message.GetError(message.NotFindError)
 		}
 		mylog.Error(err)
-		return nil, fmt.Errorf(message.ServerMaintenance.String())
+		return nil, message.GetError(message.ServerMaintenance)
 	}
 	if oauthinfo.ID <= 0 {
 		return nil, fmt.Errorf(message.NotFindError.String())
 	}
 
-	err = AddCacheOauth2TblByKey(appKey, &oauthinfo) // 缓存中获取
+	err = AddCacheOauth2TblByKey(appID, &oauthinfo) // 缓存中获取
 	if err != nil {
 		mylog.Error(err)
 	}
@@ -56,7 +56,6 @@ func getOneOauth2Tbl(appID, appKey string) (*model.Oauth2Tbl, error) {
 }
 
 func newToken(oauth2Info *model.Oauth2Tbl, username, tokenType string) (*TokenInfo, error) {
-
 	rtoken, err := newRefreshToken(oauth2Info, username, tokenType)
 	if err != nil {
 		return nil, err
@@ -68,19 +67,19 @@ func newToken(oauth2Info *model.Oauth2Tbl, username, tokenType string) (*TokenIn
 	info := &TokenInfo{}
 	info.AccessToken = atoken.Token
 	info.AccessExpireTime = atoken.ExpireTime
-	info.UserInfo = atoken.UserInfo
+	info.UserName = atoken.UserName
 	info.RefreshToken = rtoken.Token
 	info.RefreshExpireTime = rtoken.ExpireTime
 
 	return info, nil
 }
 
-func newAccessToken(oauth2Info *model.Oauth2Tbl, userinfo, tokenType string) (*TokenCache, error) {
+func newAccessToken(oauth2Info *model.Oauth2Tbl, username, tokenType string) (*TokenCache, error) {
 	var err error
 	info := model.AccessTokenTbl{
-		TokenType: tokenType,         // 令牌类型
-		AppKey:    oauth2Info.AppKey, // key
-		Userinfo:  userinfo,          // 用户名
+		TokenType: tokenType,        // 令牌类型
+		AppID:     oauth2Info.AppID, // key
+		Username:  username,         // 用户名
 		// Expires :  time.Now().Add(time.Duration(token_expire_time) * time.Second)                    // 过期时间
 	}
 
@@ -106,8 +105,8 @@ func newAccessToken(oauth2Info *model.Oauth2Tbl, userinfo, tokenType string) (*T
 	cache := &TokenCache{
 		Token:      info.AccessToken,
 		ExpireTime: info.Expires.Unix(),
-		UserInfo:   userinfo,
-		AppKey:     oauth2Info.AppKey,
+		UserName:   username,
+		AppID:      oauth2Info.AppID,
 		TokenType:  tokenType,
 	}
 
@@ -116,12 +115,12 @@ func newAccessToken(oauth2Info *model.Oauth2Tbl, userinfo, tokenType string) (*T
 	return cache, err
 }
 
-func newRefreshToken(oauth2Info *model.Oauth2Tbl, userinfo, tokenType string) (*TokenCache, error) {
+func newRefreshToken(oauth2Info *model.Oauth2Tbl, username, tokenType string) (*TokenCache, error) {
 	var err error
 	info := model.RefreshTokenTbl{
-		TokenType: tokenType,         // 令牌类型
-		AppKey:    oauth2Info.AppKey, // key
-		Userinfo:  userinfo,          // 用户名
+		TokenType: tokenType,        // 令牌类型
+		AppID:     oauth2Info.AppID, // key
+		Username:  username,         // 用户名
 		// Expires :  time.Now().Add(time.Duration(token_expire_time) * time.Second)                    // 过期时间
 	}
 
@@ -147,8 +146,8 @@ func newRefreshToken(oauth2Info *model.Oauth2Tbl, userinfo, tokenType string) (*
 	cache := &TokenCache{
 		Token:      info.RefreshToken,
 		ExpireTime: info.Expires.Unix(),
-		UserInfo:   userinfo,
-		AppKey:     oauth2Info.AppKey,
+		UserName:   username,
+		AppID:      oauth2Info.AppID,
 		TokenType:  tokenType,
 	}
 

@@ -1,17 +1,18 @@
 package model
 
 import (
+	"gorm.io/gorm"
 	"time"
 )
 
 // AccessTokenTbl 访问令牌
 type AccessTokenTbl struct {
-	ID          int       `gorm:"primaryKey" json:"id"`
-	AccessToken string    `gorm:"unique" json:"access_token"` // 访问令牌
-	TokenType   string    `json:"token_type"`                 // 令牌类型
-	AppKey      string    `json:"app_key"`                    // key
-	Userinfo    string    `json:"userinfo"`                   // 用户名
-	Expires     time.Time `json:"expires"`                    // 过期时间
+	ID          int       `json:"id"`
+	AccessToken string    `json:"accessToken"` // 访问令牌
+	TokenType   string    `json:"tokenType"`   // 令牌类型
+	AppID       string    `json:"appId"`       // 应用的唯一标识
+	Username    string    `json:"username"`    // 用户名
+	Expires     time.Time `json:"expires"`     // 过期时间
 }
 
 // TableName get sql table name.获取数据库表名
@@ -24,27 +25,32 @@ var AccessTokenTblColumns = struct {
 	ID          string
 	AccessToken string
 	TokenType   string
-	AppKey      string
-	Userinfo    string
+	AppID       string
+	Username    string
 	Expires     string
 }{
 	ID:          "id",
 	AccessToken: "access_token",
 	TokenType:   "token_type",
-	AppKey:      "app_key",
-	Userinfo:    "userinfo",
+	AppID:       "app_id",
+	Username:    "username",
 	Expires:     "expires",
 }
 
 // Oauth2Tbl oauth2 配置
 type Oauth2Tbl struct {
-	ID              int       `gorm:"primaryKey" json:"id"`
-	AppID           string    `json:"app_id"`                       // 应用的唯一标识
-	AppKey          string    `gorm:"unique" json:"app_key"`        // 公匙
-	AppSecret       string    `json:"app_secret"`                   // 私匙
-	ExpireTime      time.Time `json:"expire_time"`                  // appid超时时间
-	TokenExpireTime int       `json:"token_expire_time"`            // token过期时间
-	StrictSign      bool      `gorm:"default:1" json:"strict_sign"` // 是否强制验签:0：用户自定义，1：强制
+	gorm.Model
+	AppID           string    `json:"appId"`           // 应用的唯一标识
+	AppKey          string    `json:"appKey"`          // 公匙
+	AppSecret       string    `json:"appSecret"`       // 私匙
+	Username        string    `json:"username"`        // 用户账号
+	ExpireTime      time.Time `json:"expireTime"`      // appid超时时间
+	TokenExpireTime int       `json:"tokenExpireTime"` // token过期时间
+	StrictSign      bool      `json:"strictSign"`      // 是否强制验签:0：用户自定义，1：强制
+	OauthInfo       string    `json:"oauthInfo"`       // oauth信息(一般base64 json串)
+	CreatedBy       string    `json:"createdBy"`       // 创建者
+	UpdatedBy       string    `json:"updatedBy"`       // 更新者
+	DeletedBy       string    `json:"deletedBy"`       // 删除者
 }
 
 // TableName get sql table name.获取数据库表名
@@ -55,30 +61,46 @@ func (m *Oauth2Tbl) TableName() string {
 // Oauth2TblColumns get sql column name.获取数据库列名
 var Oauth2TblColumns = struct {
 	ID              string
+	CreatedAt       string
+	UpdatedAt       string
+	DeletedAt       string
 	AppID           string
 	AppKey          string
 	AppSecret       string
+	Username        string
 	ExpireTime      string
 	TokenExpireTime string
 	StrictSign      string
+	OauthInfo       string
+	CreatedBy       string
+	UpdatedBy       string
+	DeletedBy       string
 }{
 	ID:              "id",
+	CreatedAt:       "created_at",
+	UpdatedAt:       "updated_at",
+	DeletedAt:       "deleted_at",
 	AppID:           "app_id",
 	AppKey:          "app_key",
 	AppSecret:       "app_secret",
+	Username:        "username",
 	ExpireTime:      "expire_time",
 	TokenExpireTime: "token_expire_time",
 	StrictSign:      "strict_sign",
+	OauthInfo:       "oauth_info",
+	CreatedBy:       "created_by",
+	UpdatedBy:       "updated_by",
+	DeletedBy:       "deleted_by",
 }
 
 // RefreshTokenTbl 刷新令牌
 type RefreshTokenTbl struct {
-	ID           int       `gorm:"primaryKey" json:"id"`
-	RefreshToken string    `gorm:"unique" json:"refresh_token"` // 刷新令牌
-	TokenType    string    `json:"token_type"`                  // 令牌类型
-	AppKey       string    `json:"app_key"`                     // 访问令牌
-	Userinfo     string    `json:"userinfo"`                    // 用户名
-	Expires      time.Time `json:"expires"`                     // 过期时间
+	ID           int       `json:"id"`
+	RefreshToken string    `json:"refreshToken"` // 刷新令牌
+	TokenType    string    `json:"tokenType"`    // 令牌类型
+	AppID        string    `json:"appId"`        // 应用的唯一标识
+	Username     string    `json:"username"`     // 用户名
+	Expires      time.Time `json:"expires"`      // 过期时间
 }
 
 // TableName get sql table name.获取数据库表名
@@ -91,36 +113,36 @@ var RefreshTokenTblColumns = struct {
 	ID           string
 	RefreshToken string
 	TokenType    string
-	AppKey       string
-	Userinfo     string
+	AppID        string
+	Username     string
 	Expires      string
 }{
 	ID:           "id",
 	RefreshToken: "refresh_token",
 	TokenType:    "token_type",
-	AppKey:       "app_key",
-	Userinfo:     "userinfo",
+	AppID:        "app_id",
+	Username:     "username",
 	Expires:      "expires",
 }
 
 // UserAccountTbl [...]
 type UserAccountTbl struct {
-	ID          int         `gorm:"primaryKey" json:"id"`
-	Username    string      `gorm:"unique" json:"username"`                                           // 用户账号
-	Password    string      `json:"password"`                                                         // 用户密码
-	AccountType int         `gorm:"default:0" json:"account_type"`                                    // 帐号类型:0手机号，1邮件
-	AppKey      string      `gorm:"index:app_key;default:nomal" json:"app_key"`                       // oauth2_client_tbl表的id(验签id)
-	Oauth2Tbl   Oauth2Tbl   `gorm:"joinForeignKey:app_key;foreignKey:app_key" json:"oauth2_tbl_list"` // oauth2 配置
-	UserInfoID  int         `gorm:"index:user_info_id" json:"user_info_id"`                           // 用户附加信息id
-	UserInfoTbl UserInfoTbl `gorm:"joinForeignKey:user_info_id;foreignKey:id" json:"user_info_tbl_list"`
-	RegTime     time.Time   `json:"reg_time"`                     // 注册时间
-	RegIP       string      `json:"reg_ip"`                       // 注册ip
-	Describ     string      `json:"describ"`                      // 描述
-	Vaild       bool        `gorm:"default:1" json:"vaild"`       // 是否有效
-	CreatedBy   string      `gorm:"default:''" json:"created_by"` // 创建者
-	CreatedAt   time.Time   `json:"created_at"`                   // 创建时间
-	UpdatedBy   string      `gorm:"default:''" json:"updated_by"` // 更新者
-	UpdatedAt   time.Time   `json:"updated_at"`                   // 更新时间
+	ID          int         `json:"id"`
+	Username    string      `json:"username"`                                                     // 用户账号
+	Password    string      `json:"password"`                                                     // 用户密码
+	AccountType int         `json:"accountType"`                                                  // 帐号类型:0手机号，1邮件
+	AppID       string      `json:"appId"`                                                        // oauth2_tbl表的id(验签id)
+	Oauth2Tbl   Oauth2Tbl   `gorm:"joinForeignKey:app_id;foreignKey:app_id" json:"oauth2TblList"` // oauth2 配置
+	UserInfoID  int         `json:"userInfoId"`                                                   // 用户附加信息id
+	UserInfoTbl UserInfoTbl `gorm:"joinForeignKey:user_info_id;foreignKey:id" json:"userInfoTblList"`
+	RegTime     time.Time   `json:"regTime"`   // 注册时间
+	RegIP       string      `json:"regIp"`     // 注册ip
+	Describ     string      `json:"describ"`   // 描述
+	Vaild       bool        `json:"vaild"`     // 是否有效
+	CreatedBy   string      `json:"createdBy"` // 创建者
+	CreatedAt   time.Time   `json:"createdAt"` // 创建时间
+	UpdatedBy   string      `json:"updatedBy"` // 更新者
+	UpdatedAt   time.Time   `json:"updatedAt"` // 更新时间
 }
 
 // TableName get sql table name.获取数据库表名
@@ -134,7 +156,7 @@ var UserAccountTblColumns = struct {
 	Username    string
 	Password    string
 	AccountType string
-	AppKey      string
+	AppID       string
 	UserInfoID  string
 	RegTime     string
 	RegIP       string
@@ -149,7 +171,7 @@ var UserAccountTblColumns = struct {
 	Username:    "username",
 	Password:    "password",
 	AccountType: "account_type",
-	AppKey:      "app_key",
+	AppID:       "app_id",
 	UserInfoID:  "user_info_id",
 	RegTime:     "reg_time",
 	RegIP:       "reg_ip",
@@ -163,9 +185,13 @@ var UserAccountTblColumns = struct {
 
 // UserInfoTbl [...]
 type UserInfoTbl struct {
-	ID       int    `gorm:"primaryKey" json:"id"`
-	Nickname string `json:"nickname"`
-	Headurl  string `json:"headurl"`
+	ID        int       `json:"id"`
+	Username  string    `json:"username"`  // 用户账号
+	UserInfo  string    `json:"userInfo"`  // 用户信息(一般base64 json串)
+	CreatedBy string    `json:"createdBy"` // 创建者
+	CreatedAt time.Time `json:"createdAt"` // 创建时间
+	UpdatedBy string    `json:"updatedBy"` // 更新者
+	UpdatedAt time.Time `json:"updatedAt"` // 更新时间
 }
 
 // TableName get sql table name.获取数据库表名
@@ -175,11 +201,19 @@ func (m *UserInfoTbl) TableName() string {
 
 // UserInfoTblColumns get sql column name.获取数据库列名
 var UserInfoTblColumns = struct {
-	ID       string
-	Nickname string
-	Headurl  string
+	ID        string
+	Username  string
+	UserInfo  string
+	CreatedBy string
+	CreatedAt string
+	UpdatedBy string
+	UpdatedAt string
 }{
-	ID:       "id",
-	Nickname: "nickname",
-	Headurl:  "headurl",
+	ID:        "id",
+	Username:  "username",
+	UserInfo:  "user_info",
+	CreatedBy: "created_by",
+	CreatedAt: "created_at",
+	UpdatedBy: "updated_by",
+	UpdatedAt: "updated_at",
 }

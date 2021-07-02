@@ -27,14 +27,14 @@ func (obj *_RefreshTokenTblMgr) GetTableName() string {
 
 // Get 获取
 func (obj *_RefreshTokenTblMgr) Get() (result RefreshTokenTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Find(&result).Error
+	err = obj.DB.WithContext(obj.ctx).Model(RefreshTokenTbl{}).Find(&result).Error
 
 	return
 }
 
 // Gets 获取批量结果
 func (obj *_RefreshTokenTblMgr) Gets() (results []*RefreshTokenTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(RefreshTokenTbl{}).Find(&results).Error
 
 	return
 }
@@ -56,14 +56,14 @@ func (obj *_RefreshTokenTblMgr) WithTokenType(tokenType string) Option {
 	return optionFunc(func(o *options) { o.query["token_type"] = tokenType })
 }
 
-// WithAppKey app_key获取 访问令牌
-func (obj *_RefreshTokenTblMgr) WithAppKey(appKey string) Option {
-	return optionFunc(func(o *options) { o.query["app_key"] = appKey })
+// WithAppID app_id获取 应用的唯一标识
+func (obj *_RefreshTokenTblMgr) WithAppID(appID string) Option {
+	return optionFunc(func(o *options) { o.query["app_id"] = appID })
 }
 
-// WithUserinfo userinfo获取 用户名
-func (obj *_RefreshTokenTblMgr) WithUserinfo(userinfo string) Option {
-	return optionFunc(func(o *options) { o.query["userinfo"] = userinfo })
+// WithUsername username获取 用户名
+func (obj *_RefreshTokenTblMgr) WithUsername(username string) Option {
+	return optionFunc(func(o *options) { o.query["username"] = username })
 }
 
 // WithExpires expires获取 过期时间
@@ -80,7 +80,7 @@ func (obj *_RefreshTokenTblMgr) GetByOption(opts ...Option) (result RefreshToken
 		o.apply(&options)
 	}
 
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where(options.query).Find(&result).Error
+	err = obj.DB.WithContext(obj.ctx).Model(RefreshTokenTbl{}).Where(options.query).Find(&result).Error
 
 	return
 }
@@ -94,7 +94,7 @@ func (obj *_RefreshTokenTblMgr) GetByOptions(opts ...Option) (results []*Refresh
 		o.apply(&options)
 	}
 
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where(options.query).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(RefreshTokenTbl{}).Where(options.query).Find(&results).Error
 
 	return
 }
@@ -103,100 +103,100 @@ func (obj *_RefreshTokenTblMgr) GetByOptions(opts ...Option) (results []*Refresh
 
 // GetFromID 通过id获取内容
 func (obj *_RefreshTokenTblMgr) GetFromID(id int) (result RefreshTokenTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("id = ?", id).Find(&result).Error
+	err = obj.DB.WithContext(obj.ctx).Model(RefreshTokenTbl{}).Where("`id` = ?", id).Find(&result).Error
 
 	return
 }
 
-// GetBatchFromID 批量唯一主键查找
+// GetBatchFromID 批量查找
 func (obj *_RefreshTokenTblMgr) GetBatchFromID(ids []int) (results []*RefreshTokenTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("id IN (?)", ids).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(RefreshTokenTbl{}).Where("`id` IN (?)", ids).Find(&results).Error
 
 	return
 }
 
 // GetFromRefreshToken 通过refresh_token获取内容 刷新令牌
 func (obj *_RefreshTokenTblMgr) GetFromRefreshToken(refreshToken string) (result RefreshTokenTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("refresh_token = ?", refreshToken).Find(&result).Error
+	err = obj.DB.WithContext(obj.ctx).Model(RefreshTokenTbl{}).Where("`refresh_token` = ?", refreshToken).Find(&result).Error
 
 	return
 }
 
-// GetBatchFromRefreshToken 批量唯一主键查找 刷新令牌
+// GetBatchFromRefreshToken 批量查找 刷新令牌
 func (obj *_RefreshTokenTblMgr) GetBatchFromRefreshToken(refreshTokens []string) (results []*RefreshTokenTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("refresh_token IN (?)", refreshTokens).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(RefreshTokenTbl{}).Where("`refresh_token` IN (?)", refreshTokens).Find(&results).Error
 
 	return
 }
 
 // GetFromTokenType 通过token_type获取内容 令牌类型
 func (obj *_RefreshTokenTblMgr) GetFromTokenType(tokenType string) (results []*RefreshTokenTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("token_type = ?", tokenType).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(RefreshTokenTbl{}).Where("`token_type` = ?", tokenType).Find(&results).Error
 
 	return
 }
 
-// GetBatchFromTokenType 批量唯一主键查找 令牌类型
+// GetBatchFromTokenType 批量查找 令牌类型
 func (obj *_RefreshTokenTblMgr) GetBatchFromTokenType(tokenTypes []string) (results []*RefreshTokenTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("token_type IN (?)", tokenTypes).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(RefreshTokenTbl{}).Where("`token_type` IN (?)", tokenTypes).Find(&results).Error
 
 	return
 }
 
-// GetFromAppKey 通过app_key获取内容 访问令牌
-func (obj *_RefreshTokenTblMgr) GetFromAppKey(appKey string) (results []*RefreshTokenTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("app_key = ?", appKey).Find(&results).Error
+// GetFromAppID 通过app_id获取内容 应用的唯一标识
+func (obj *_RefreshTokenTblMgr) GetFromAppID(appID string) (results []*RefreshTokenTbl, err error) {
+	err = obj.DB.WithContext(obj.ctx).Model(RefreshTokenTbl{}).Where("`app_id` = ?", appID).Find(&results).Error
 
 	return
 }
 
-// GetBatchFromAppKey 批量唯一主键查找 访问令牌
-func (obj *_RefreshTokenTblMgr) GetBatchFromAppKey(appKeys []string) (results []*RefreshTokenTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("app_key IN (?)", appKeys).Find(&results).Error
+// GetBatchFromAppID 批量查找 应用的唯一标识
+func (obj *_RefreshTokenTblMgr) GetBatchFromAppID(appIDs []string) (results []*RefreshTokenTbl, err error) {
+	err = obj.DB.WithContext(obj.ctx).Model(RefreshTokenTbl{}).Where("`app_id` IN (?)", appIDs).Find(&results).Error
 
 	return
 }
 
-// GetFromUserinfo 通过userinfo获取内容 用户名
-func (obj *_RefreshTokenTblMgr) GetFromUserinfo(userinfo string) (results []*RefreshTokenTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("userinfo = ?", userinfo).Find(&results).Error
+// GetFromUsername 通过username获取内容 用户名
+func (obj *_RefreshTokenTblMgr) GetFromUsername(username string) (results []*RefreshTokenTbl, err error) {
+	err = obj.DB.WithContext(obj.ctx).Model(RefreshTokenTbl{}).Where("`username` = ?", username).Find(&results).Error
 
 	return
 }
 
-// GetBatchFromUserinfo 批量唯一主键查找 用户名
-func (obj *_RefreshTokenTblMgr) GetBatchFromUserinfo(userinfos []string) (results []*RefreshTokenTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("userinfo IN (?)", userinfos).Find(&results).Error
+// GetBatchFromUsername 批量查找 用户名
+func (obj *_RefreshTokenTblMgr) GetBatchFromUsername(usernames []string) (results []*RefreshTokenTbl, err error) {
+	err = obj.DB.WithContext(obj.ctx).Model(RefreshTokenTbl{}).Where("`username` IN (?)", usernames).Find(&results).Error
 
 	return
 }
 
 // GetFromExpires 通过expires获取内容 过期时间
 func (obj *_RefreshTokenTblMgr) GetFromExpires(expires time.Time) (results []*RefreshTokenTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("expires = ?", expires).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(RefreshTokenTbl{}).Where("`expires` = ?", expires).Find(&results).Error
 
 	return
 }
 
-// GetBatchFromExpires 批量唯一主键查找 过期时间
+// GetBatchFromExpires 批量查找 过期时间
 func (obj *_RefreshTokenTblMgr) GetBatchFromExpires(expiress []time.Time) (results []*RefreshTokenTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("expires IN (?)", expiress).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(RefreshTokenTbl{}).Where("`expires` IN (?)", expiress).Find(&results).Error
 
 	return
 }
 
 //////////////////////////primary index case ////////////////////////////////////////////
 
-// FetchByPrimaryKey primay or index 获取唯一内容
+// FetchByPrimaryKey primary or index 获取唯一内容
 func (obj *_RefreshTokenTblMgr) FetchByPrimaryKey(id int) (result RefreshTokenTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("id = ?", id).Find(&result).Error
+	err = obj.DB.WithContext(obj.ctx).Model(RefreshTokenTbl{}).Where("`id` = ?", id).Find(&result).Error
 
 	return
 }
 
-// FetchUniqueByRefreshToken primay or index 获取唯一内容
+// FetchUniqueByRefreshToken primary or index 获取唯一内容
 func (obj *_RefreshTokenTblMgr) FetchUniqueByRefreshToken(refreshToken string) (result RefreshTokenTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("refresh_token = ?", refreshToken).Find(&result).Error
+	err = obj.DB.WithContext(obj.ctx).Model(RefreshTokenTbl{}).Where("`refresh_token` = ?", refreshToken).Find(&result).Error
 
 	return
 }

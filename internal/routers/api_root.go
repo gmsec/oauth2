@@ -10,8 +10,10 @@ import (
 
 	"oauth2/internal/service/oauth"
 
+	"github.com/chenjiandongx/ginprom"
 	"github.com/gin-gonic/gin"
 	"github.com/gmsec/micro/server"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/xxjwxc/ginrpc"
 	"github.com/xxjwxc/public/dev"
 	"github.com/xxjwxc/public/tools"
@@ -43,15 +45,19 @@ func OnInitRouter(router gin.IRouter, objs ...interface{}) {
 // InitFunc 默认初始化函数
 func InitFunc(router gin.IRouter) {
 	router.StaticFS("/file", http.Dir(tools.GetCurrentDirectory()+"/file")) //加载静态资源，一般是上传的资源，例如用户上传的图片
+	router.GET("/health", func(c *gin.Context) {
+		c.String(http.StatusOK, "ok")
+	}) // 健康检查
+	router.GET("/metrics", ginprom.PromHandler(promhttp.Handler())) // 添加grafana监控
 }
 
 // InitObj 初始化对象
 func InitObj(router gin.IRouter, objs ...interface{}) {
-	base := ginrpc.New(ginrpc.WithCtx(api.NewAPIFunc), ginrpc.WithOutDoc(dev.IsDev()), ginrpc.WithDebug(dev.IsDev()), ginrpc.WithOutPath("internal/routers"),
+	base := ginrpc.New(ginrpc.WithCtx(api.NewAPIFunc), ginrpc.WithOutDoc(dev.IsDev()), ginrpc.WithDebug(dev.IsDev()), ginrpc.WithOutPath("internal/routers"), ginrpc.WithImportFile("rpc/common", "../apidoc/rpc/common"),
 		ginrpc.WithBeforeAfter(&ginrpc.DefaultGinBeforeAfter{})) // 基础信息注册
 	//	objs = append(objs, new(hello.Hello)) // protoc service 注册
 
-	// base.OutDoc(true)              // 输出文档
+	base.OutDoc(dev.IsDev())       // 输出文档
 	base.Register(router, objs...) // 对象注册
 }
 

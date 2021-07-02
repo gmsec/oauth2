@@ -27,9 +27,9 @@ func (obj *_UserAccountTblMgr) GetTableName() string {
 
 // Get 获取
 func (obj *_UserAccountTblMgr) Get() (result UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Find(&result).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Find(&result).Error
 	if err == nil && obj.isRelated {
-		if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", result.AppKey).Find(&result.Oauth2Tbl).Error; err != nil { // oauth2 配置
+		if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", result.AppID).Find(&result.Oauth2Tbl).Error; err != nil { // oauth2 配置
 			if err != gorm.ErrRecordNotFound { // 非 没找到
 				return
 			}
@@ -46,10 +46,10 @@ func (obj *_UserAccountTblMgr) Get() (result UserAccountTbl, err error) {
 
 // Gets 获取批量结果
 func (obj *_UserAccountTblMgr) Gets() (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -86,9 +86,9 @@ func (obj *_UserAccountTblMgr) WithAccountType(accountType int) Option {
 	return optionFunc(func(o *options) { o.query["account_type"] = accountType })
 }
 
-// WithAppKey app_key获取 oauth2_client_tbl表的id(验签id)
-func (obj *_UserAccountTblMgr) WithAppKey(appKey string) Option {
-	return optionFunc(func(o *options) { o.query["app_key"] = appKey })
+// WithAppID app_id获取 oauth2_tbl表的id(验签id)
+func (obj *_UserAccountTblMgr) WithAppID(appID string) Option {
+	return optionFunc(func(o *options) { o.query["app_id"] = appID })
 }
 
 // WithUserInfoID user_info_id获取 用户附加信息id
@@ -145,9 +145,9 @@ func (obj *_UserAccountTblMgr) GetByOption(opts ...Option) (result UserAccountTb
 		o.apply(&options)
 	}
 
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where(options.query).Find(&result).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where(options.query).Find(&result).Error
 	if err == nil && obj.isRelated {
-		if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", result.AppKey).Find(&result.Oauth2Tbl).Error; err != nil { // oauth2 配置
+		if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", result.AppID).Find(&result.Oauth2Tbl).Error; err != nil { // oauth2 配置
 			if err != gorm.ErrRecordNotFound { // 非 没找到
 				return
 			}
@@ -171,10 +171,10 @@ func (obj *_UserAccountTblMgr) GetByOptions(opts ...Option) (results []*UserAcco
 		o.apply(&options)
 	}
 
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where(options.query).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where(options.query).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -193,9 +193,9 @@ func (obj *_UserAccountTblMgr) GetByOptions(opts ...Option) (results []*UserAcco
 
 // GetFromID 通过id获取内容
 func (obj *_UserAccountTblMgr) GetFromID(id int) (result UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("id = ?", id).Find(&result).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`id` = ?", id).Find(&result).Error
 	if err == nil && obj.isRelated {
-		if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", result.AppKey).Find(&result.Oauth2Tbl).Error; err != nil { // oauth2 配置
+		if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", result.AppID).Find(&result.Oauth2Tbl).Error; err != nil { // oauth2 配置
 			if err != gorm.ErrRecordNotFound { // 非 没找到
 				return
 			}
@@ -210,12 +210,12 @@ func (obj *_UserAccountTblMgr) GetFromID(id int) (result UserAccountTbl, err err
 	return
 }
 
-// GetBatchFromID 批量唯一主键查找
+// GetBatchFromID 批量查找
 func (obj *_UserAccountTblMgr) GetBatchFromID(ids []int) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("id IN (?)", ids).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`id` IN (?)", ids).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -232,9 +232,9 @@ func (obj *_UserAccountTblMgr) GetBatchFromID(ids []int) (results []*UserAccount
 
 // GetFromUsername 通过username获取内容 用户账号
 func (obj *_UserAccountTblMgr) GetFromUsername(username string) (result UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("username = ?", username).Find(&result).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`username` = ?", username).Find(&result).Error
 	if err == nil && obj.isRelated {
-		if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", result.AppKey).Find(&result.Oauth2Tbl).Error; err != nil { // oauth2 配置
+		if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", result.AppID).Find(&result.Oauth2Tbl).Error; err != nil { // oauth2 配置
 			if err != gorm.ErrRecordNotFound { // 非 没找到
 				return
 			}
@@ -249,12 +249,12 @@ func (obj *_UserAccountTblMgr) GetFromUsername(username string) (result UserAcco
 	return
 }
 
-// GetBatchFromUsername 批量唯一主键查找 用户账号
+// GetBatchFromUsername 批量查找 用户账号
 func (obj *_UserAccountTblMgr) GetBatchFromUsername(usernames []string) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("username IN (?)", usernames).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`username` IN (?)", usernames).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -271,10 +271,10 @@ func (obj *_UserAccountTblMgr) GetBatchFromUsername(usernames []string) (results
 
 // GetFromPassword 通过password获取内容 用户密码
 func (obj *_UserAccountTblMgr) GetFromPassword(password string) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("password = ?", password).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`password` = ?", password).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -289,12 +289,12 @@ func (obj *_UserAccountTblMgr) GetFromPassword(password string) (results []*User
 	return
 }
 
-// GetBatchFromPassword 批量唯一主键查找 用户密码
+// GetBatchFromPassword 批量查找 用户密码
 func (obj *_UserAccountTblMgr) GetBatchFromPassword(passwords []string) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("password IN (?)", passwords).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`password` IN (?)", passwords).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -311,10 +311,10 @@ func (obj *_UserAccountTblMgr) GetBatchFromPassword(passwords []string) (results
 
 // GetFromAccountType 通过account_type获取内容 帐号类型:0手机号，1邮件
 func (obj *_UserAccountTblMgr) GetFromAccountType(accountType int) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("account_type = ?", accountType).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`account_type` = ?", accountType).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -329,12 +329,12 @@ func (obj *_UserAccountTblMgr) GetFromAccountType(accountType int) (results []*U
 	return
 }
 
-// GetBatchFromAccountType 批量唯一主键查找 帐号类型:0手机号，1邮件
+// GetBatchFromAccountType 批量查找 帐号类型:0手机号，1邮件
 func (obj *_UserAccountTblMgr) GetBatchFromAccountType(accountTypes []int) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("account_type IN (?)", accountTypes).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`account_type` IN (?)", accountTypes).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -349,12 +349,12 @@ func (obj *_UserAccountTblMgr) GetBatchFromAccountType(accountTypes []int) (resu
 	return
 }
 
-// GetFromAppKey 通过app_key获取内容 oauth2_client_tbl表的id(验签id)
-func (obj *_UserAccountTblMgr) GetFromAppKey(appKey string) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("app_key = ?", appKey).Find(&results).Error
+// GetFromAppID 通过app_id获取内容 oauth2_tbl表的id(验签id)
+func (obj *_UserAccountTblMgr) GetFromAppID(appID string) (results []*UserAccountTbl, err error) {
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`app_id` = ?", appID).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -369,12 +369,12 @@ func (obj *_UserAccountTblMgr) GetFromAppKey(appKey string) (results []*UserAcco
 	return
 }
 
-// GetBatchFromAppKey 批量唯一主键查找 oauth2_client_tbl表的id(验签id)
-func (obj *_UserAccountTblMgr) GetBatchFromAppKey(appKeys []string) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("app_key IN (?)", appKeys).Find(&results).Error
+// GetBatchFromAppID 批量查找 oauth2_tbl表的id(验签id)
+func (obj *_UserAccountTblMgr) GetBatchFromAppID(appIDs []string) (results []*UserAccountTbl, err error) {
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`app_id` IN (?)", appIDs).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -391,10 +391,10 @@ func (obj *_UserAccountTblMgr) GetBatchFromAppKey(appKeys []string) (results []*
 
 // GetFromUserInfoID 通过user_info_id获取内容 用户附加信息id
 func (obj *_UserAccountTblMgr) GetFromUserInfoID(userInfoID int) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("user_info_id = ?", userInfoID).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`user_info_id` = ?", userInfoID).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -409,12 +409,12 @@ func (obj *_UserAccountTblMgr) GetFromUserInfoID(userInfoID int) (results []*Use
 	return
 }
 
-// GetBatchFromUserInfoID 批量唯一主键查找 用户附加信息id
+// GetBatchFromUserInfoID 批量查找 用户附加信息id
 func (obj *_UserAccountTblMgr) GetBatchFromUserInfoID(userInfoIDs []int) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("user_info_id IN (?)", userInfoIDs).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`user_info_id` IN (?)", userInfoIDs).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -431,10 +431,10 @@ func (obj *_UserAccountTblMgr) GetBatchFromUserInfoID(userInfoIDs []int) (result
 
 // GetFromRegTime 通过reg_time获取内容 注册时间
 func (obj *_UserAccountTblMgr) GetFromRegTime(regTime time.Time) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("reg_time = ?", regTime).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`reg_time` = ?", regTime).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -449,12 +449,12 @@ func (obj *_UserAccountTblMgr) GetFromRegTime(regTime time.Time) (results []*Use
 	return
 }
 
-// GetBatchFromRegTime 批量唯一主键查找 注册时间
+// GetBatchFromRegTime 批量查找 注册时间
 func (obj *_UserAccountTblMgr) GetBatchFromRegTime(regTimes []time.Time) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("reg_time IN (?)", regTimes).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`reg_time` IN (?)", regTimes).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -471,10 +471,10 @@ func (obj *_UserAccountTblMgr) GetBatchFromRegTime(regTimes []time.Time) (result
 
 // GetFromRegIP 通过reg_ip获取内容 注册ip
 func (obj *_UserAccountTblMgr) GetFromRegIP(regIP string) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("reg_ip = ?", regIP).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`reg_ip` = ?", regIP).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -489,12 +489,12 @@ func (obj *_UserAccountTblMgr) GetFromRegIP(regIP string) (results []*UserAccoun
 	return
 }
 
-// GetBatchFromRegIP 批量唯一主键查找 注册ip
+// GetBatchFromRegIP 批量查找 注册ip
 func (obj *_UserAccountTblMgr) GetBatchFromRegIP(regIPs []string) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("reg_ip IN (?)", regIPs).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`reg_ip` IN (?)", regIPs).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -511,10 +511,10 @@ func (obj *_UserAccountTblMgr) GetBatchFromRegIP(regIPs []string) (results []*Us
 
 // GetFromDescrib 通过describ获取内容 描述
 func (obj *_UserAccountTblMgr) GetFromDescrib(describ string) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("describ = ?", describ).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`describ` = ?", describ).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -529,12 +529,12 @@ func (obj *_UserAccountTblMgr) GetFromDescrib(describ string) (results []*UserAc
 	return
 }
 
-// GetBatchFromDescrib 批量唯一主键查找 描述
+// GetBatchFromDescrib 批量查找 描述
 func (obj *_UserAccountTblMgr) GetBatchFromDescrib(describs []string) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("describ IN (?)", describs).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`describ` IN (?)", describs).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -551,10 +551,10 @@ func (obj *_UserAccountTblMgr) GetBatchFromDescrib(describs []string) (results [
 
 // GetFromVaild 通过vaild获取内容 是否有效
 func (obj *_UserAccountTblMgr) GetFromVaild(vaild bool) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("vaild = ?", vaild).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`vaild` = ?", vaild).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -569,12 +569,12 @@ func (obj *_UserAccountTblMgr) GetFromVaild(vaild bool) (results []*UserAccountT
 	return
 }
 
-// GetBatchFromVaild 批量唯一主键查找 是否有效
+// GetBatchFromVaild 批量查找 是否有效
 func (obj *_UserAccountTblMgr) GetBatchFromVaild(vailds []bool) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("vaild IN (?)", vailds).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`vaild` IN (?)", vailds).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -591,10 +591,10 @@ func (obj *_UserAccountTblMgr) GetBatchFromVaild(vailds []bool) (results []*User
 
 // GetFromCreatedBy 通过created_by获取内容 创建者
 func (obj *_UserAccountTblMgr) GetFromCreatedBy(createdBy string) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("created_by = ?", createdBy).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`created_by` = ?", createdBy).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -609,12 +609,12 @@ func (obj *_UserAccountTblMgr) GetFromCreatedBy(createdBy string) (results []*Us
 	return
 }
 
-// GetBatchFromCreatedBy 批量唯一主键查找 创建者
+// GetBatchFromCreatedBy 批量查找 创建者
 func (obj *_UserAccountTblMgr) GetBatchFromCreatedBy(createdBys []string) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("created_by IN (?)", createdBys).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`created_by` IN (?)", createdBys).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -631,10 +631,10 @@ func (obj *_UserAccountTblMgr) GetBatchFromCreatedBy(createdBys []string) (resul
 
 // GetFromCreatedAt 通过created_at获取内容 创建时间
 func (obj *_UserAccountTblMgr) GetFromCreatedAt(createdAt time.Time) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("created_at = ?", createdAt).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`created_at` = ?", createdAt).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -649,12 +649,12 @@ func (obj *_UserAccountTblMgr) GetFromCreatedAt(createdAt time.Time) (results []
 	return
 }
 
-// GetBatchFromCreatedAt 批量唯一主键查找 创建时间
+// GetBatchFromCreatedAt 批量查找 创建时间
 func (obj *_UserAccountTblMgr) GetBatchFromCreatedAt(createdAts []time.Time) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("created_at IN (?)", createdAts).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`created_at` IN (?)", createdAts).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -671,10 +671,10 @@ func (obj *_UserAccountTblMgr) GetBatchFromCreatedAt(createdAts []time.Time) (re
 
 // GetFromUpdatedBy 通过updated_by获取内容 更新者
 func (obj *_UserAccountTblMgr) GetFromUpdatedBy(updatedBy string) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("updated_by = ?", updatedBy).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`updated_by` = ?", updatedBy).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -689,12 +689,12 @@ func (obj *_UserAccountTblMgr) GetFromUpdatedBy(updatedBy string) (results []*Us
 	return
 }
 
-// GetBatchFromUpdatedBy 批量唯一主键查找 更新者
+// GetBatchFromUpdatedBy 批量查找 更新者
 func (obj *_UserAccountTblMgr) GetBatchFromUpdatedBy(updatedBys []string) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("updated_by IN (?)", updatedBys).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`updated_by` IN (?)", updatedBys).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -711,10 +711,10 @@ func (obj *_UserAccountTblMgr) GetBatchFromUpdatedBy(updatedBys []string) (resul
 
 // GetFromUpdatedAt 通过updated_at获取内容 更新时间
 func (obj *_UserAccountTblMgr) GetFromUpdatedAt(updatedAt time.Time) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("updated_at = ?", updatedAt).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`updated_at` = ?", updatedAt).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -729,12 +729,12 @@ func (obj *_UserAccountTblMgr) GetFromUpdatedAt(updatedAt time.Time) (results []
 	return
 }
 
-// GetBatchFromUpdatedAt 批量唯一主键查找 更新时间
+// GetBatchFromUpdatedAt 批量查找 更新时间
 func (obj *_UserAccountTblMgr) GetBatchFromUpdatedAt(updatedAts []time.Time) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("updated_at IN (?)", updatedAts).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`updated_at` IN (?)", updatedAts).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -751,11 +751,11 @@ func (obj *_UserAccountTblMgr) GetBatchFromUpdatedAt(updatedAts []time.Time) (re
 
 //////////////////////////primary index case ////////////////////////////////////////////
 
-// FetchByPrimaryKey primay or index 获取唯一内容
+// FetchByPrimaryKey primary or index 获取唯一内容
 func (obj *_UserAccountTblMgr) FetchByPrimaryKey(id int) (result UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("id = ?", id).Find(&result).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`id` = ?", id).Find(&result).Error
 	if err == nil && obj.isRelated {
-		if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", result.AppKey).Find(&result.Oauth2Tbl).Error; err != nil { // oauth2 配置
+		if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", result.AppID).Find(&result.Oauth2Tbl).Error; err != nil { // oauth2 配置
 			if err != gorm.ErrRecordNotFound { // 非 没找到
 				return
 			}
@@ -770,11 +770,11 @@ func (obj *_UserAccountTblMgr) FetchByPrimaryKey(id int) (result UserAccountTbl,
 	return
 }
 
-// FetchUniqueByUNIQ5696AD037D3656A4 primay or index 获取唯一内容
-func (obj *_UserAccountTblMgr) FetchUniqueByUNIQ5696AD037D3656A4(username string) (result UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("username = ?", username).Find(&result).Error
+// FetchUniqueByUsername primary or index 获取唯一内容
+func (obj *_UserAccountTblMgr) FetchUniqueByUsername(username string) (result UserAccountTbl, err error) {
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`username` = ?", username).Find(&result).Error
 	if err == nil && obj.isRelated {
-		if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", result.AppKey).Find(&result.Oauth2Tbl).Error; err != nil { // oauth2 配置
+		if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", result.AppID).Find(&result.Oauth2Tbl).Error; err != nil { // oauth2 配置
 			if err != gorm.ErrRecordNotFound { // 非 没找到
 				return
 			}
@@ -790,11 +790,11 @@ func (obj *_UserAccountTblMgr) FetchUniqueByUNIQ5696AD037D3656A4(username string
 }
 
 // FetchIndexByAppKey  获取多个内容
-func (obj *_UserAccountTblMgr) FetchIndexByAppKey(appKey string) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("app_key = ?", appKey).Find(&results).Error
+func (obj *_UserAccountTblMgr) FetchIndexByAppKey(appID string) (results []*UserAccountTbl, err error) {
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`app_id` = ?", appID).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}
@@ -811,10 +811,10 @@ func (obj *_UserAccountTblMgr) FetchIndexByAppKey(appKey string) (results []*Use
 
 // FetchIndexByUserInfoID  获取多个内容
 func (obj *_UserAccountTblMgr) FetchIndexByUserInfoID(userInfoID int) (results []*UserAccountTbl, err error) {
-	err = obj.DB.WithContext(obj.ctx).Table(obj.GetTableName()).Where("user_info_id = ?", userInfoID).Find(&results).Error
+	err = obj.DB.WithContext(obj.ctx).Model(UserAccountTbl{}).Where("`user_info_id` = ?", userInfoID).Find(&results).Error
 	if err == nil && obj.isRelated {
 		for i := 0; i < len(results); i++ {
-			if err = obj.New().Table("oauth2_tbl").Where("app_key = ?", results[i].AppKey).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
+			if err = obj.New().Table("oauth2_tbl").Where("app_id = ?", results[i].AppID).Find(&results[i].Oauth2Tbl).Error; err != nil { // oauth2 配置
 				if err != gorm.ErrRecordNotFound { // 非 没找到
 					return
 				}

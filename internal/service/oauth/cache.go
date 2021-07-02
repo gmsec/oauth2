@@ -42,8 +42,8 @@ func init() {
 }
 
 // GetCacheOauth2TblByKey 获取一个key
-func GetCacheOauth2TblByKey(appKey string) *model.Oauth2Tbl {
-	key := _prefixOauth2Tbl + appKey
+func GetCacheOauth2TblByKey(appID string) *model.Oauth2Tbl {
+	key := _prefixOauth2Tbl + appID
 	if _cache.IsExist(key) {
 		var tmp model.Oauth2Tbl
 		err := _cache.Value(key, &tmp)
@@ -57,15 +57,15 @@ func GetCacheOauth2TblByKey(appKey string) *model.Oauth2Tbl {
 }
 
 // DeleteCacheOauth2TblByKey 获取一个key
-func DeleteCacheOauth2TblByKey(appKey string) error {
-	key := _prefixOauth2Tbl + appKey
+func DeleteCacheOauth2TblByKey(appID string) error {
+	key := _prefixOauth2Tbl + appID
 	return _cache.Delete(key)
 }
 
 // AddCacheOauth2TblByKey 添加一个key
-func AddCacheOauth2TblByKey(appKey string, v *model.Oauth2Tbl) error {
-	key := _prefixOauth2Tbl + appKey
-	return _cache.Add(key, v, 72*time.Hour)
+func AddCacheOauth2TblByKey(appID string, v *model.Oauth2Tbl) error {
+	key := _prefixOauth2Tbl + appID
+	return _cache.Add(key, v, time.Duration(v.TokenExpireTime)*time.Second)
 }
 
 // AddCacheToken 添加一个cache缓存

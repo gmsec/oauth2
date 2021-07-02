@@ -10,6 +10,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	common "rpc/common"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -35,6 +36,20 @@ type Oauth2Client interface {
 	RefreshToken(ctx context.Context, in *RefreshTokenReq, opts ...grpc.CallOption) (*RefreshTokenResp, error)
 	// Login 登录
 	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
+	// GetLoginInfo 获取用户信息
+	GetLoginInfo(ctx context.Context, in *GetLoginInfoReq, opts ...grpc.CallOption) (*GetLoginInfoResp, error)
+	// CreateOauth 创建token
+	CreateOauth(ctx context.Context, in *CreateOauthReq, opts ...grpc.CallOption) (*CreateOauthResp, error)
+	// GetAppList 获取应用
+	GetAppList(ctx context.Context, in *GetAppListReq, opts ...grpc.CallOption) (*GetAppListResp, error)
+	// DeleteApp 删除应用
+	DeleteApp(ctx context.Context, in *DeleteAppReq, opts ...grpc.CallOption) (*DeleteAppResp, error)
+	// CreateUser 创建用户
+	CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*common.Empty, error)
+	// GetUsers 获取用户列表
+	GetUsers(ctx context.Context, in *GetUsersReq, opts ...grpc.CallOption) (*GetUsersResp, error)
+	// UpdateUser 更新/删除用户
+	UpdateUser(ctx context.Context, in *UpdateUserReq, opts ...grpc.CallOption) (*common.Empty, error)
 }
 
 type oauth2Client struct {
@@ -43,7 +58,7 @@ type oauth2Client struct {
 
 // GetOauth2Name get client name(package.class)
 func GetOauth2Name() string {
-	return "oauth2.Oauth2"
+	return "oauth2.oauth2"
 }
 
 // GetOauth2Client get client by clientname
@@ -69,7 +84,7 @@ func (c *oauth2Client) Authorize(ctx context.Context, in *AuthorizeReq, opts ...
 		return nil, err
 	}
 	out := new(AuthorizeResp)
-	err = conn.Invoke(ctx, "/oauth2.Oauth2/Authorize", in, out, opts...)
+	err = conn.Invoke(ctx, "/oauth2.oauth2/Authorize", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +98,7 @@ func (c *oauth2Client) CheckToken(ctx context.Context, in *CheckTokenReq, opts .
 		return nil, err
 	}
 	out := new(CheckTokenResp)
-	err = conn.Invoke(ctx, "/oauth2.Oauth2/CheckToken", in, out, opts...)
+	err = conn.Invoke(ctx, "/oauth2.oauth2/CheckToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +112,7 @@ func (c *oauth2Client) RefreshToken(ctx context.Context, in *RefreshTokenReq, op
 		return nil, err
 	}
 	out := new(RefreshTokenResp)
-	err = conn.Invoke(ctx, "/oauth2.Oauth2/RefreshToken", in, out, opts...)
+	err = conn.Invoke(ctx, "/oauth2.oauth2/RefreshToken", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +126,105 @@ func (c *oauth2Client) Login(ctx context.Context, in *LoginReq, opts ...grpc.Cal
 		return nil, err
 	}
 	out := new(LoginResp)
-	err = conn.Invoke(ctx, "/oauth2.Oauth2/Login", in, out, opts...)
+	err = conn.Invoke(ctx, "/oauth2.oauth2/Login", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oauth2Client) GetLoginInfo(ctx context.Context, in *GetLoginInfoReq, opts ...grpc.CallOption) (*GetLoginInfoResp, error) {
+	conn, err := c.cc.Next()
+	defer conn.Close()
+	if err != nil {
+		return nil, err
+	}
+	out := new(GetLoginInfoResp)
+	err = conn.Invoke(ctx, "/oauth2.oauth2/GetLoginInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oauth2Client) CreateOauth(ctx context.Context, in *CreateOauthReq, opts ...grpc.CallOption) (*CreateOauthResp, error) {
+	conn, err := c.cc.Next()
+	defer conn.Close()
+	if err != nil {
+		return nil, err
+	}
+	out := new(CreateOauthResp)
+	err = conn.Invoke(ctx, "/oauth2.oauth2/CreateOauth", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oauth2Client) GetAppList(ctx context.Context, in *GetAppListReq, opts ...grpc.CallOption) (*GetAppListResp, error) {
+	conn, err := c.cc.Next()
+	defer conn.Close()
+	if err != nil {
+		return nil, err
+	}
+	out := new(GetAppListResp)
+	err = conn.Invoke(ctx, "/oauth2.oauth2/GetAppList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oauth2Client) DeleteApp(ctx context.Context, in *DeleteAppReq, opts ...grpc.CallOption) (*DeleteAppResp, error) {
+	conn, err := c.cc.Next()
+	defer conn.Close()
+	if err != nil {
+		return nil, err
+	}
+	out := new(DeleteAppResp)
+	err = conn.Invoke(ctx, "/oauth2.oauth2/DeleteApp", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oauth2Client) CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*common.Empty, error) {
+	conn, err := c.cc.Next()
+	defer conn.Close()
+	if err != nil {
+		return nil, err
+	}
+	out := new(common.Empty)
+	err = conn.Invoke(ctx, "/oauth2.oauth2/CreateUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oauth2Client) GetUsers(ctx context.Context, in *GetUsersReq, opts ...grpc.CallOption) (*GetUsersResp, error) {
+	conn, err := c.cc.Next()
+	defer conn.Close()
+	if err != nil {
+		return nil, err
+	}
+	out := new(GetUsersResp)
+	err = conn.Invoke(ctx, "/oauth2.oauth2/GetUsers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oauth2Client) UpdateUser(ctx context.Context, in *UpdateUserReq, opts ...grpc.CallOption) (*common.Empty, error) {
+	conn, err := c.cc.Next()
+	defer conn.Close()
+	if err != nil {
+		return nil, err
+	}
+	out := new(common.Empty)
+	err = conn.Invoke(ctx, "/oauth2.oauth2/UpdateUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -128,6 +241,20 @@ type Oauth2Server interface {
 	RefreshToken(context.Context, *RefreshTokenReq) (*RefreshTokenResp, error)
 	// Login 登录
 	Login(context.Context, *LoginReq) (*LoginResp, error)
+	// GetLoginInfo 获取用户信息
+	GetLoginInfo(context.Context, *GetLoginInfoReq) (*GetLoginInfoResp, error)
+	// CreateOauth 创建token
+	CreateOauth(context.Context, *CreateOauthReq) (*CreateOauthResp, error)
+	// GetAppList 获取应用
+	GetAppList(context.Context, *GetAppListReq) (*GetAppListResp, error)
+	// DeleteApp 删除应用
+	DeleteApp(context.Context, *DeleteAppReq) (*DeleteAppResp, error)
+	// CreateUser 创建用户
+	CreateUser(context.Context, *CreateUserReq) (*common.Empty, error)
+	// GetUsers 获取用户列表
+	GetUsers(context.Context, *GetUsersReq) (*GetUsersResp, error)
+	// UpdateUser 更新/删除用户
+	UpdateUser(context.Context, *UpdateUserReq) (*common.Empty, error)
 }
 
 // UnimplementedOauth2Server can be embedded to have forward compatible implementations.
@@ -146,6 +273,27 @@ func (*UnimplementedOauth2Server) RefreshToken(context.Context, *RefreshTokenReq
 func (*UnimplementedOauth2Server) Login(context.Context, *LoginReq) (*LoginResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
+func (*UnimplementedOauth2Server) GetLoginInfo(context.Context, *GetLoginInfoReq) (*GetLoginInfoResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLoginInfo not implemented")
+}
+func (*UnimplementedOauth2Server) CreateOauth(context.Context, *CreateOauthReq) (*CreateOauthResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateOauth not implemented")
+}
+func (*UnimplementedOauth2Server) GetAppList(context.Context, *GetAppListReq) (*GetAppListResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAppList not implemented")
+}
+func (*UnimplementedOauth2Server) DeleteApp(context.Context, *DeleteAppReq) (*DeleteAppResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteApp not implemented")
+}
+func (*UnimplementedOauth2Server) CreateUser(context.Context, *CreateUserReq) (*common.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+}
+func (*UnimplementedOauth2Server) GetUsers(context.Context, *GetUsersReq) (*GetUsersResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUsers not implemented")
+}
+func (*UnimplementedOauth2Server) UpdateUser(context.Context, *UpdateUserReq) (*common.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
+}
 
 func RegisterOauth2Server(s server.Server, srv Oauth2Server) {
 	s.GetServer().RegisterService(&_Oauth2_serviceDesc, srv)
@@ -161,7 +309,7 @@ func _Oauth2_Authorize_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/oauth2.Oauth2/Authorize",
+		FullMethod: "/oauth2.oauth2/Authorize",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(Oauth2Server).Authorize(ctx, req.(*AuthorizeReq))
@@ -179,7 +327,7 @@ func _Oauth2_CheckToken_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/oauth2.Oauth2/CheckToken",
+		FullMethod: "/oauth2.oauth2/CheckToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(Oauth2Server).CheckToken(ctx, req.(*CheckTokenReq))
@@ -197,7 +345,7 @@ func _Oauth2_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/oauth2.Oauth2/RefreshToken",
+		FullMethod: "/oauth2.oauth2/RefreshToken",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(Oauth2Server).RefreshToken(ctx, req.(*RefreshTokenReq))
@@ -215,7 +363,7 @@ func _Oauth2_Login_Handler(srv interface{}, ctx context.Context, dec func(interf
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/oauth2.Oauth2/Login",
+		FullMethod: "/oauth2.oauth2/Login",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(Oauth2Server).Login(ctx, req.(*LoginReq))
@@ -223,8 +371,134 @@ func _Oauth2_Login_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Oauth2_GetLoginInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetLoginInfoReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(Oauth2Server).GetLoginInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/oauth2.oauth2/GetLoginInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(Oauth2Server).GetLoginInfo(ctx, req.(*GetLoginInfoReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Oauth2_CreateOauth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateOauthReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(Oauth2Server).CreateOauth(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/oauth2.oauth2/CreateOauth",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(Oauth2Server).CreateOauth(ctx, req.(*CreateOauthReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Oauth2_GetAppList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAppListReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(Oauth2Server).GetAppList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/oauth2.oauth2/GetAppList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(Oauth2Server).GetAppList(ctx, req.(*GetAppListReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Oauth2_DeleteApp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAppReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(Oauth2Server).DeleteApp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/oauth2.oauth2/DeleteApp",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(Oauth2Server).DeleteApp(ctx, req.(*DeleteAppReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Oauth2_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateUserReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(Oauth2Server).CreateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/oauth2.oauth2/CreateUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(Oauth2Server).CreateUser(ctx, req.(*CreateUserReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Oauth2_GetUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUsersReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(Oauth2Server).GetUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/oauth2.oauth2/GetUsers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(Oauth2Server).GetUsers(ctx, req.(*GetUsersReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Oauth2_UpdateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(Oauth2Server).UpdateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/oauth2.oauth2/UpdateUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(Oauth2Server).UpdateUser(ctx, req.(*UpdateUserReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Oauth2_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "oauth2.Oauth2",
+	ServiceName: "oauth2.oauth2",
 	HandlerType: (*Oauth2Server)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -242,6 +516,34 @@ var _Oauth2_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Login",
 			Handler:    _Oauth2_Login_Handler,
+		},
+		{
+			MethodName: "GetLoginInfo",
+			Handler:    _Oauth2_GetLoginInfo_Handler,
+		},
+		{
+			MethodName: "CreateOauth",
+			Handler:    _Oauth2_CreateOauth_Handler,
+		},
+		{
+			MethodName: "GetAppList",
+			Handler:    _Oauth2_GetAppList_Handler,
+		},
+		{
+			MethodName: "DeleteApp",
+			Handler:    _Oauth2_DeleteApp_Handler,
+		},
+		{
+			MethodName: "CreateUser",
+			Handler:    _Oauth2_CreateUser_Handler,
+		},
+		{
+			MethodName: "GetUsers",
+			Handler:    _Oauth2_GetUsers_Handler,
+		},
+		{
+			MethodName: "UpdateUser",
+			Handler:    _Oauth2_UpdateUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

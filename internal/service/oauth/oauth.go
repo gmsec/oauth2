@@ -6,11 +6,11 @@ import (
 	"oauth2/internal/core"
 	"oauth2/internal/model"
 	proto "oauth2/rpc/oauth2"
-	"strings"
 	"time"
 
 	"github.com/xxjwxc/public/message"
 	"github.com/xxjwxc/public/mylog"
+	"github.com/xxjwxc/public/tools"
 )
 
 const (
@@ -23,7 +23,7 @@ type Oauth struct {
 
 // Authorize 应用授权
 func (h *Oauth) Authorize(ctx context.Context, req *proto.AuthorizeReq) (*proto.AuthorizeResp, error) {
-	if len(req.AppKey) == 0 {
+	if len(req.AppId) == 0 {
 		return nil, message.GetError(message.ParameterInvalid)
 	}
 
@@ -42,8 +42,12 @@ func (h *Oauth) Authorize(ctx context.Context, req *proto.AuthorizeReq) (*proto.
 		req.AppId = oauthinfo.AppID
 	}
 
+	userName := req.UserName
+	if len(userName) == 0 {
+		userName = req.AppId
+	}
 	// 校验成功，生成 reflash/access_token
-	token, err := newToken(oauthinfo, req.AppId, req.TokenType)
+	token, err := newToken(oauthinfo, userName, req.TokenType)
 	if err != nil {
 		return nil, err
 	}
@@ -84,8 +88,8 @@ func (h *Oauth) CheckToken(ctx context.Context, req *proto.CheckTokenReq) (*prot
 		}
 		tmp.Token = info.AccessToken
 		tmp.ExpireTime = info.Expires.Unix()
-		tmp.UserInfo = info.Userinfo
-		tmp.AppKey = info.AppKey
+		tmp.UserName = info.Username
+		tmp.AppID = info.AppID
 		tmp.TokenType = info.TokenType
 	}
 
@@ -97,8 +101,9 @@ func (h *Oauth) CheckToken(ctx context.Context, req *proto.CheckTokenReq) (*prot
 	// 未过期，直接返回
 	return &proto.CheckTokenResp{
 		AccessToken:      tmp.Token,
-		UserInfo:         tmp.UserInfo,
+		UserName:         tmp.UserName,
 		AccessExpireTime: tmp.ExpireTime,
+		AppId:            tmp.AppID,
 	}, nil
 }
 
@@ -130,8 +135,8 @@ func (h *Oauth) RefreshToken(ctx context.Context, req *proto.RefreshTokenReq) (*
 		}
 		tmp.Token = info.RefreshToken
 		tmp.ExpireTime = info.Expires.Unix()
-		tmp.UserInfo = info.Userinfo
-		tmp.AppKey = info.AppKey
+		tmp.UserName = info.Username
+		tmp.AppID = info.AppID
 		tmp.TokenType = info.TokenType
 	}
 
@@ -142,12 +147,12 @@ func (h *Oauth) RefreshToken(ctx context.Context, req *proto.RefreshTokenReq) (*
 
 	// 未过期，刷新token
 
-	oauthinfo, err := getOneOauth2Tbl("", tmp.AppKey)
+	oauthinfo, err := getOneOauth2Tbl(tmp.AppID, "")
 	if err != nil {
 		return nil, err
 	}
 
-	token, err := newToken(oauthinfo, oauthinfo.AppID, tmp.TokenType)
+	token, err := newToken(oauthinfo, oauthinfo.Username, tmp.TokenType)
 	if err != nil {
 		return nil, err
 	}
@@ -161,55 +166,102 @@ func (h *Oauth) RefreshToken(ctx context.Context, req *proto.RefreshTokenReq) (*
 	}, nil
 }
 
-// Login 登录
-func (h *Oauth) Login(ctx context.Context, req *proto.LoginReq) (*proto.LoginResp, error) {
-	if len(req.Username) == 0 || len(req.Password) == 0 {
+// CreateOauth 创建oauth
+func (h *Oauth) CreateOauth(ctx context.Context, req *proto.CreateOauthReq) (*proto.CreateOauthResp, error) {
+	if len(req.Username) == 0 {
 		return nil, message.GetError(message.ParameterInvalid)
 	}
 
-	//--------------验签
-	if !verifyToken(req.Token, fmt.Sprintf("%v%v%v", req.Username, req.Password, req.Timestamp)) { // 验签失败
-		return nil, message.GetError(message.TokenCheckError)
-	}
-	// -----------------------end
+	orm := core.Dao.GetDBw()
+	var times [5][0]int
+	for range times {
+		oauthInfo := model.Oauth2Tbl{
+			AppID:           tools.GetRangeNumString(16), // 应用的唯一标识
+			AppKey:          tools.GetRandomString(24),   // 公匙
+			AppSecret:       tools.GetRandomString(32),   // 私匙
+			Username:        req.Username,                // 用户账号
+			ExpireTime:      time.Unix(2524579200, 0),    // appid超时时间
+			TokenExpireTime: 1000000,                     // token过期时间
+			OauthInfo:       req.OauthInfo,
+			CreatedBy:       req.Username,
+		}
+		oauthInfo.Model.CreatedAt = time.Now()
 
-	orm := core.Dao.GetDBr()
-	info, err := model.UserAccountTblMgr(orm.DB).GetFromUsername(req.Username)
-	if err != nil {
-		if orm.IsNotFound(err) { // 未找到
-			return nil, message.GetError(message.UserNameDoNotExist)
+		var count int64
+		if err := model.Oauth2TblMgr(orm.Where("app_id = ?", oauthInfo.AppID)).Count(&count).Error; err != nil {
+			return nil, err
 		}
 
-		mylog.Error(err)
-		return nil, err
+		if count == 0 {
+			if err := model.Oauth2TblMgr(orm.DB).Save(&oauthInfo).Error; err != nil {
+				return nil, err
+			} else { // 创建成功
+				return &proto.CreateOauthResp{
+					AppId:     oauthInfo.AppID,  // 应用id
+					AppKey:    oauthInfo.AppKey, // 公匙
+					AppSecret: oauthInfo.AppSecret,
+				}, nil
+			}
+		}
+
+		time.Sleep(100 * time.Millisecond)
 	}
 
-	if info.ID <= 0 || !strings.EqualFold(req.Password, info.Password) {
-		return nil, message.GetError(message.UserNameDoNotExist)
+	return nil, message.GetError(message.UnknownError)
+}
+
+// GetAppList 获取应用信息
+func (h *Oauth) GetAppList(ctx context.Context, req *proto.GetAppListReq) (*proto.GetAppListResp, error) {
+	if len(req.Username) == 0 && len(req.AppIds) == 0 {
+		return nil, message.GetError(message.ParameterInvalid)
+	}
+	if req.PageSize == 0 {
+		req.PageSize = 10
 	}
 
-	if !info.Vaild { // 已无效
-		return nil, message.GetError(message.InValidOp)
-	}
+	resp := &proto.GetAppListResp{}
+	orm := core.Dao.GetDBr()
 
-	oauthinfo := &info.Oauth2Tbl
-	if oauthinfo.ID <= 0 { // 使用默认appkey
-		oauthinfo, err = getOneOauth2Tbl("", _defaltAppKey)
+	var list []*model.Oauth2Tbl
+	var err error
+
+	if len(req.AppIds) > 0 {
+		// offse
+		db := orm.Offset(int(req.PageNo * req.PageSize)).Limit(int(req.PageSize)).Order("created_at desc")
+		list, err = model.Oauth2TblMgr(db).GetBatchFromAppID(req.AppIds)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		// 获取数量
+		model.Oauth2TblMgr(orm.Where("username = ?", req.Username)).Count(&(resp.Total))
+
+		// offse
+		db := orm.Offset(int(req.PageNo * req.PageSize)).Limit(int(req.PageSize)).Order("created_at desc")
+		list, err = model.Oauth2TblMgr(db).GetFromUsername(req.Username)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	// 校验成功，生成 reflash/access_token
-	token, err := newToken(oauthinfo, req.Username, "login")
-	if err != nil {
-		return nil, err
+	for _, v := range list {
+		resp.List = append(resp.List, &proto.AppInfo{
+			AppId:     v.AppID, // appid
+			OauthInfo: v.OauthInfo,
+		})
+	}
+	return resp, nil
+}
+
+// DeleteAppList 删除应用
+func (h *Oauth) DeleteApp(ctx context.Context, req *proto.DeleteAppReq) (*proto.DeleteAppResp, error) {
+	if len(req.Username) == 0 {
+		return nil, message.GetError(message.ParameterInvalid)
 	}
 
-	return &proto.LoginResp{
-		AccessToken:       token.AccessToken,
-		RefreshToken:      token.RefreshToken,
-		AccessExpireTime:  token.AccessExpireTime,
-		RefreshExpireTime: token.RefreshExpireTime,
+	orm := core.Dao.GetDBw()
+	num := orm.Where("app_id = ?", req.AppId).Delete(&model.Oauth2Tbl{}).RowsAffected
+	return &proto.DeleteAppResp{
+		RowsAffected: num,
 	}, nil
 }

@@ -11,6 +11,7 @@ type Config struct {
 	RedisDbInfo RedisDbInfo `yaml:"redis_info"`
 	Oauth2Url   string      `yaml:"oauth2_url"`
 	Port        string      `yaml:"port"` // 端口号
+	EtcdInfo    EtcdInfo    `yaml:"etcd_info"`
 }
 
 // MysqlDbInfo mysql database information. mysql 数据库信息
@@ -29,6 +30,12 @@ type RedisDbInfo struct {
 	Password  string   // Password 密码
 	GroupName string   `yaml:"group_name"` // 分组名字
 	DB        int      `yaml:"db"`         // 数据库序号
+}
+
+// EtcdInfo etcd config info
+type EtcdInfo struct {
+	Addrs   []string `yaml:"addrs"`   // Host. 地址
+	Timeout int      `yaml:"timeout"` // 超时时间(秒)
 }
 
 // SetMysqlDbInfo Update MySQL configuration information
@@ -75,4 +82,9 @@ func GetPort() string {
 // GetRedisDbInfo Get redis configuration information .获取redis配置信息
 func GetRedisDbInfo() RedisDbInfo {
 	return _map.RedisDbInfo
+}
+
+// GetEtcdInfo get etcd configuration information. 获取etcd 配置信息
+func GetEtcdInfo() EtcdInfo {
+	return _map.EtcdInfo
 }

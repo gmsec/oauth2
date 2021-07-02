@@ -16,4 +16,7 @@ redis_info:
     password: Niren1015
     group_name: oauth2
     db: 0
-port : 82
+etcd_info:
+    addrs: ["192.155.1.150:2379"]
+    timeout: 3
+port : 84

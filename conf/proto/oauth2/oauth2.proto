@@ -1,0 +1,184 @@
+syntax = "proto3"; // 指定proto版本
+
+package oauth2;     // 指定包名
+import "common/common_public.proto";
+
+option go_package = "rpc/oauth2"; // 指定路径
+
+// 定义oauth2服务
+service oauth2 {
+    // Authorize 授权获取令牌
+    rpc Authorize(AuthorizeReq) returns (AuthorizeResp) {}
+    // CheckToken 校验token，并获取详细信息
+    rpc CheckToken(CheckTokenReq) returns (CheckTokenResp) {}
+    // RefreshToken 刷新token
+    rpc RefreshToken(RefreshTokenReq) returns (RefreshTokenResp){}
+    // Login 登录
+    rpc Login(LoginReq) returns (LoginResp) {}
+    // GetLoginInfo 获取用户信息
+    rpc GetLoginInfo(GetLoginInfoReq)returns(GetLoginInfoResp){}
+    // CreateOauth 创建token
+    rpc CreateOauth(CreateOauthReq)returns(CreateOauthResp){}
+    // GetAppList 获取应用
+    rpc GetAppList(GetAppListReq)returns(GetAppListResp){}
+    // DeleteApp 删除应用
+    rpc DeleteApp(DeleteAppReq) returns (DeleteAppResp){}
+    // CreateUser 创建用户
+    rpc CreateUser(CreateUserReq)returns (common.Empty){}
+    // GetUsers 获取用户列表
+    rpc GetUsers(GetUsersReq)returns (GetUsersResp){}
+    // UpdateUser 更新/删除用户
+    rpc UpdateUser(UpdateUserReq)returns (common.Empty){}
+}
+
+// AuthorizeReq 授权请求接口
+message AuthorizeReq {
+    string appId = 1; // 应用的唯一标识
+    string appKey = 2;// 公匙
+    string tokenType = 3;// 令牌类型
+    int64 timestamp = 4;// 当前时间戳(秒,差异系统时间10秒)
+    string token =5;// 验证token md5(appid + appKey + timestamp + appSecret) 
+    string userName = 6;// 用户名(没有可以不用填写) 
+}
+
+// AuthorizeResp 授权返回值
+message AuthorizeResp {
+    string accessToken = 1;// 访问令牌
+    string refreshToken = 2;// 刷新令牌
+    int64 accessExpireTime = 3; // 访问令牌过期时间
+    int64 refreshExpireTime = 4; // 刷新令牌过期时间
+}
+
+// CheckTokenReq 校验token req请求
+message CheckTokenReq{
+    string token =1;// token
+}
+
+// CheckTokenResp 校验token 返回值
+message CheckTokenResp{
+    string accessToken = 1;// 访问令牌
+    string userName = 2;// 用户名
+    int64 accessExpireTime = 3; // 访问令牌过期时间
+    string appId = 4; // 应用的唯一标识
+}
+
+// RefreshTokenReq 刷新token
+message RefreshTokenReq{
+    string token = 1;// 刷新令牌
+}
+
+// RefreshTokenResp 刷新token 返回值
+message RefreshTokenResp{
+    string accessToken = 1;// 访问令牌
+    string refreshToken = 2;// 刷新令牌
+    int64 accessExpireTime = 3; // 访问令牌过期时间
+    int64 refreshExpireTime = 4; // 刷新令牌过期时间
+    string userInfo = 5;// 用户信息
+}
+
+message LoginReq {
+    string username = 1;// 用户名
+    string password = 2;// 用户密码(md5加密)
+    int64 timestamp = 3;// 当前时间戳(秒,差异系统时间10秒)
+    string token = 4;// 验证token md5(username + password + timestamp)
+}
+
+// LoginResp 授权返回值
+message LoginResp {
+    string accessToken = 1;// 访问令牌
+    string refreshToken = 2;// 刷新令牌
+    int64 accessExpireTime = 3; // 访问令牌过期时间
+    int64 refreshExpireTime = 4; // 刷新令牌过期时间
+}
+
+// GetLoginInfoReq 获取用户信息请求参数
+message GetLoginInfoReq{
+    string accessToken = 1;// 用户token (跟用户名二选一)
+}
+
+// GetLoginInfoResp 获取用户信息返回参数
+message GetLoginInfoResp{
+    string username = 1;// 用户名
+    int64 accessExpireTime = 2; // 访问令牌过期时间
+    string userInfo = 3;// 用户信息(一般base64 json串)
+}
+
+// CreateOauthReq 创建oauth
+message CreateOauthReq{
+    string username = 1;// 用户名
+    string oauthInfo = 2;// 应用信息(一般base64 json串)
+}
+
+// CreateOauthResp 创建oauth
+message CreateOauthResp{
+    string appId = 1;// 应用id
+    string appKey = 2;// 公匙
+    string appSecret = 3;// 私匙
+}
+
+// GetAppListReq 获取应用
+message GetAppListReq{
+    string username = 1;// 用户名
+    repeated string appIds = 2;// 应用id(如果有，用户名无效)
+    int32 pageNo = 3;// 页数
+    int32 pageSize = 4;// 每页条数
+}
+
+// AppInfo 应用信息
+message AppInfo {
+    string appId = 1;// appid
+    string oauthInfo = 2;// 应用信息(一般base64 json串)
+}
+
+// GetAppListResp 获取应用
+message GetAppListResp{
+    repeated AppInfo list = 1;// 返回数据
+    int64 total = 2;// 总条数
+}
+
+// DeleteAppReq 删除应用
+message DeleteAppReq {
+    string appId = 1;// appid
+    string username = 2;// 用户名
+}
+
+// DeleteAppResp 删除应用
+message DeleteAppResp {
+    int64 rowsAffected = 1;// 受影响的条数
+}
+
+// CreateUserReq 创建用户
+message CreateUserReq {
+    string rootName = 1;// 创建者
+    string userName = 2;// 用户名
+    string password = 3;// 用户密码(md5码)
+    string userInfo = 4;// 应用信息(一般base64 json串)
+    string regIP = 5;// 注册时间
+}
+
+
+// GetUsersReq 获取用户信息
+message GetUsersReq{
+    string rootName = 1;// 创建者
+    string userName = 2;// 用户名(为空获取所有用户列表)
+}
+
+// UserInfo 用户信息
+message UserInfo {
+    string username = 1;// 用户名
+    string userInfo = 4;// 应用信息(一般base64 json串)
+}
+
+// GetUsersResp 获取用户信息
+message GetUsersResp{
+    repeated UserInfo list = 1;// 用户信息
+}
+
+// UpdateUserReq 更新用户
+message UpdateUserReq {
+    string rootName = 1;// 创建者
+    string userName =2;// 用户名(要操作的用户名)
+    int32 op = 3;// 操作(1:添加，-1:删除)
+    string password =4;// 用户密码(md5码)(如果有修改,不为空)
+    string userInfo = 5;// 应用信息(一般base64 json串)
+}
